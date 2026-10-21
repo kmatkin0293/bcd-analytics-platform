@@ -4,7 +4,8 @@ import express from 'express'
 import Anthropic from '@anthropic-ai/sdk'
 import { load as loadYaml } from 'js-yaml'
 import PptxGenJS from 'pptxgenjs'
-import { CLIENT_NAME, TABS } from '../src/config.js'
+import { Readable } from 'node:stream'
+import { CLIENT_NAME, TABS, LABS_EXCLUDED_IDS } from '../src/config.js'
 import { buildSystemPrompt, AI_MODEL, AI_MAX_TOKENS, MCP, TOOL_CONFIGS, humanizeToolName, extractThinkingChunks, extractIframeUrl } from './ai.js'
 
 // override: true so .env.local wins over any stale variables already in the shell
@@ -729,6 +730,63 @@ app.post('/api/export/pptx', async (req, res) => {
   } catch (error) {
     console.error('PPTX export error', error.message)
     res.status(502).json({ error: 'Could not build the PowerPoint' })
+  }
+})
+
+// ---- Dashboard Labs: dashboards the user builds with BCD AI ----
+// The browser never holds a token: this server adds the minted one to every call.
+
+const MCP_VERSION = '2026-10-14' // pinned so a server release can't change the designer's tools under the page
+const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Pass-through to the Spotter MCP server (it sends no CORS headers, and its designer tasks and
+// analysis sessions are kept under the token, so the same cached token must serve the whole visit).
+app.all('/api/ts-mcp', async (req, res) => {
+  if (!['POST', 'GET', 'DELETE'].includes(req.method)) return res.status(405).end()
+  const abort = new AbortController()
+  res.on('close', () => abort.abort())
+  try {
+    const { token } = await mintToken(TS_USERNAME)
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'x-ts-host': TS_HOST,
+      Accept: req.get('accept') || 'application/json, text/event-stream',
+    }
+    for (const h of ['content-type', 'mcp-session-id', 'mcp-protocol-version']) if (req.get(h)) headers[h] = req.get(h)
+    const r = await fetch(`${MCP.url}?api-version=${MCP_VERSION}`, {
+      method: req.method,
+      headers,
+      body: req.method === 'POST' ? JSON.stringify(req.body ?? {}) : undefined,
+      signal: abort.signal,
+    })
+    res.status(r.status)
+    for (const h of ['content-type', 'mcp-session-id']) if (r.headers.get(h)) res.setHeader(h, r.headers.get(h))
+    res.setHeader('Cache-Control', 'no-store')
+    if (!r.body) return res.end()
+    Readable.fromWeb(r.body).pipe(res)
+  } catch (error) {
+    if (!abort.signal.aborted) console.error('MCP proxy error', error.message)
+    if (!res.headersSent) res.status(502).json({ error: 'Could not reach the analytics agent' })
+    else res.end()
+  }
+})
+
+// Only what Dashboard Labs needs of the REST API is passed through (dashboards, their TML, drafts).
+const REST_ALLOWED = ['/metadata/search', '/metadata/tml/export', '/metadata/tml/import', '/metadata/delete', '/auth/session/user']
+app.all('/api/ts-rest/*path', async (req, res) => {
+  const path = `/${[].concat(req.params.path).join('/')}`
+  if (!REST_ALLOWED.includes(path) || !['GET', 'POST'].includes(req.method)) return res.status(404).end()
+  try {
+    const { token } = await mintToken(TS_USERNAME)
+    const r = await fetch(`${TS_HOST}/api/rest/2.0${path}`, {
+      method: req.method,
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${token}` },
+      body: req.method === 'POST' ? JSON.stringify(req.body ?? {}) : undefined,
+    })
+    res.status(r.status).type(r.headers.get('content-type') || 'application/json').send(await r.text())
+  } catch (error) {
+    console.error('REST proxy error', error.message)
+    res.status(502).json({ error: 'Analytics service unavailable' })
   }
 })
 

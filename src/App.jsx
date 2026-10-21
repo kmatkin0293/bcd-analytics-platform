@@ -1,11 +1,17 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Routes, Route, NavLink, Navigate, useNavigate, useLocation, useParams, Link } from 'react-router-dom'
+import { Routes, Route, Outlet, NavLink, Navigate, useNavigate, useLocation, useParams, Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { SpotterEmbed } from '@thoughtspot/visual-embed-sdk/react'
 import { TABS, INSIGHTS, tabBySlug, insightBySlug, TRAVEL, MODEL_ID, CLIENT_FILTER, CLIENT_NAME, BOOKING_TOOL_URL } from './config'
 import { ToastProvider, useToast, Modal, CountUp, useLiveData } from './ui'
 import { AIChatProvider, useAIChat, AIMark } from './AIChat'
 import { LiveboardTab } from './Analytics'
+import { ExperienceProvider } from './labs/experience'
+import { Dashboards } from './labs/DashboardsPage'
+import { DashboardView } from './labs/DashboardView'
+import { Studio } from './labs/Studio'
+import { LabBuilderRoute } from './labs/LabBuilder'
+import './labs/labs.css'
 import { Icon } from './icons'
 import './design.css'
 import BcdLogo from './BcdLogo.jsx'
@@ -93,6 +99,7 @@ function Sidebar({ userType, actions }) {
         <div className="sb-label">Core modules</div>
         <NavLink to="/dashboard" className={link}><Icon name="dashboard" size={17} /> Home</NavLink>
         <NavLink to="/ai" className={link}><Icon name="sparkles" size={17} /> BCD AI <span className="sb-pill">Live</span></NavLink>
+        <NavLink to="/labs" className={link}><Icon name="flask" size={17} /> Dashboard Builder</NavLink>
         <div className="sb-label">Analytics</div>
         {TABS.map((t) => (canSeeTab(userType, t) ? (
           <NavLink key={t.slug} to={`/analytics/${t.slug}`} className={link}><Icon name={t.icon} size={17} /> {t.name}</NavLink>
@@ -845,7 +852,7 @@ function Shell({ userType, onLogout }) {
     navigate(`/analytics/${tab && canSeeTab(userType, tab) ? a.tab : 'overview'}`)
   }
 
-  const pageKey = location.pathname.startsWith('/analytics') ? 'analytics' : location.pathname.startsWith('/insights') ? 'insights' : location.pathname
+  const pageKey = location.pathname.startsWith('/analytics') ? 'analytics' : location.pathname.startsWith('/insights') ? 'insights' : /^\/(labs|dashboards|studio)/.test(location.pathname) ? 'build' : location.pathname
   const progressKey = location.pathname
 
   return (
@@ -854,7 +861,7 @@ function Shell({ userType, onLogout }) {
       <Sidebar userType={userType} actions={actions} />
       <div className="workspace">
       <Topbar userType={userType} onLogout={onLogout} actions={actions} />
-      <main className={`main ${location.pathname === '/ai' ? 'full' : ''} ${location.pathname.startsWith('/analytics') ? 'wide' : ''}`}>
+      <main className={`main ${location.pathname === '/ai' ? 'full' : ''} ${location.pathname.startsWith('/analytics') || /^\/(labs|dashboards|studio)/.test(location.pathname) ? 'wide' : ''}`}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={pageKey} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.22 }}>
             <Routes location={location}>
@@ -864,6 +871,16 @@ function Shell({ userType, onLogout }) {
               <Route path="/analytics/:tab" element={<AnalyticsPage userType={userType} actions={actions} />} />
               <Route path="/insights/:slug" element={<InsightPage />} />
               <Route path="/ai" element={<AIPage />} />
+              <Route path="/dashboards" element={<Dashboards />} />
+              <Route path="/dashboards/:id" element={<DashboardView />} />
+              <Route path="/studio" element={<Studio />} />
+              {/* Dashboard Labs: the same pages, with BCD AI building by conversation (src/labs/experience.jsx). */}
+              <Route path="/labs" element={<ExperienceProvider experience="lab"><Outlet /></ExperienceProvider>}>
+                <Route index element={<Dashboards />} />
+                <Route path="dashboards/:id" element={<DashboardView />} />
+                <Route path="studio" element={<Studio />} />
+                <Route path="shuttleviz/:id" element={<LabBuilderRoute />} />
+              </Route>
               <Route path="/spotter" element={<Navigate to="/ai" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

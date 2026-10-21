@@ -1,7 +1,7 @@
 import {
   Package, Truck, Gauge, Leaf, ClipboardList, BarChart3, Home, LayoutDashboard, Sparkles, Plus, CalendarDays,
   CheckCircle2, Wrench, Search, Bell, HelpCircle, Settings, MapPin, User, ShieldCheck, Lock, RefreshCw, TrendingUp,
-  AlertTriangle, Info, DollarSign, Check, X, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowRight, RotateCcw, XCircle, FileText, Boxes, Plane, ExternalLink, Copy, Pencil, FileDown, MoreHorizontal, Link2, Download, Clock, Share2, Presentation, CalendarClock, Send, Mail, Tag, Building2, LifeBuoy,
+  AlertTriangle, Info, DollarSign, Check, X, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowRight, RotateCcw, XCircle, FileText, Boxes, Plane, ExternalLink, Copy, Pencil, FileDown, MoreHorizontal, Link2, Download, Clock, Share2, Presentation, CalendarClock, Send, Mail, Tag, Building2, LifeBuoy, FlaskConical, Maximize2, Minimize2, Table2,
 } from 'lucide-react'
 
 const ICONS = {
@@ -11,6 +11,7 @@ const ICONS = {
   shield: ShieldCheck, lock: Lock, refresh: RefreshCw, 'trending-up': TrendingUp, warn: AlertTriangle, info: Info,
   check: Check, x: X, 'chevron-right': ChevronRight, 'chevron-left': ChevronLeft, 'chevron-down': ChevronDown, 'chevron-up': ChevronUp, ChevronUp, arrow: ArrowRight, reset: RotateCcw,
   dollar: DollarSign, 'x-circle': XCircle, file: FileText, boxes: Boxes, plane: Plane, send: Send, mail: Mail, external: ExternalLink, tag: Tag, building: Building2, 'life-buoy': LifeBuoy,
+  edit: Pencil, flask: FlaskConical, expand: Maximize2, shrink: Minimize2, table: Table2,
 }
 
 /** Consistent SVG icon set (Lucide) — replaces emoji across the UI. */

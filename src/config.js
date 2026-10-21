@@ -65,3 +65,26 @@ export const TRAVEL = {
 
 // Where "Book a trip" sends travellers. Placeholder until the real BCD booking tool URL is available.
 export const BOOKING_TOOL_URL = 'https://www.bcdtravel.com/travel-management/platform/'
+
+// Dashboard Labs: the portal's own liveboards are not listed under "My dashboards".
+export const LABS_EXCLUDED_IDS = [
+  LIVEBOARD_ID,
+  ...TABS.flatMap((t) => (t.liveboardId ? [t.liveboardId, ...(t.liveboardTabs ?? []).map((x) => x.id)] : [])),
+]
+
+// The portal's Policy & Compliance liveboard is listed under "Shared with you" in Labs, to open or clone.
+export const LABS_SHARED_IDS = TABS.filter((t) => t.slug === 'policy-compliance').map((t) => t.liveboardId)
+
+// Briefs that start a dashboard in Labs, grounded in the booking model.
+export const LABS_BRIEFS = [
+  { id: 'exec', summary: 'Executive overview: spend, bookings, policy and carbon KPIs, monthly trend', label: 'Executive overview',
+    prompt: 'Build an executive overview for the last 12 months: total travel spend, number of bookings, out of policy rate and carbon emissions as KPIs, the monthly spend trend, and spend by travel type.' },
+  { id: 'policy', summary: 'Policy & compliance: out of policy by department, reasons and destinations', label: 'Policy & compliance',
+    prompt: 'Build a policy compliance dashboard for the last 6 months: out of policy rate by department, the most common out of policy reasons, and the destinations with the most out of policy bookings.' },
+  { id: 'spend', summary: 'Spend & savings: spend by cost centre, top suppliers and their savings', label: 'Spend & savings',
+    prompt: 'Build a spend management dashboard: spend by cost centre, monthly spend by travel type, and the top 10 suppliers by spend with their negotiated savings.' },
+  { id: 'sustainability', summary: 'Sustainability: carbon by travel type, top routes, monthly trend', label: 'Sustainability',
+    prompt: 'Build a sustainability dashboard: carbon emissions by travel type, the top 10 routes by emissions, and the monthly emissions trend.' },
+  { id: 'bookings', summary: 'Bookings & trips: channels, advance booking window, top destinations', label: 'Bookings & trips',
+    prompt: 'Build a bookings and trips dashboard: bookings by channel, the advance booking window, and the top 10 destinations by number of trips.' },
+]
