@@ -1,0 +1,26 @@
+# Local Docker testing only — Coolify does its own build/run, it doesn't use
+# this file. Run with: pnpm docker:up (wraps `docker compose --env-file
+# .env.local up --build -d`, so every var below is read from that one file
+# instead of being retyped on the command line).
+services:
+  cohortline:
+    build:
+      context: .
+      args:
+        # Bare names (no value) tell Compose to fill these in from its own
+        # interpolation environment — supplied by --env-file .env.local —
+        # then pass them through as real Docker build args.
+        - NEXT_PUBLIC_THOUGHTSPOT_HOST
+        - NEXT_PUBLIC_LIVEBOARD_PHARMA_CLINICAL_TRIALS
+        - NEXT_PUBLIC_LIVEBOARD_FACILITY_ANALYTICS
+        - NEXT_PUBLIC_LIVEBOARD_COUNTRY_STATS
+        - NEXT_PUBLIC_MODEL_PHARMA_CLINICAL_TRIALS
+    # Loads every var in .env.local into the running container — this is
+    # what supplies the runtime secrets (THOUGHTSPOT_SECRET_KEY,
+    # THOUGHTSPOT_ORG_ID, ANTHROPIC_API_KEY). Harmlessly also sets the
+    # NEXT_PUBLIC_* vars again at runtime; they have no effect there since
+    # they're already baked into the client bundle from the build args above.
+    env_file:
+      - .env.local
+    ports:
+      - "3000:3000"

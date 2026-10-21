@@ -1,0 +1,28 @@
+:root {
+  --blue: #542DFF;
+  --blue-dark: #0B0052;
+  --blue-light: #7A5CFF;
+  --teal: #00AFD7;
+  --bg: #F1F4F6;
+  --white: #FFFFFF;
+  --text: #2A3744;
+  --text-muted: #5A6B7C;
+  --border: #DDE4E9;
+  --navy: #0B0052;
+  --violet: #542DFF;
+  --sky: #00AFD7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

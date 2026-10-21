@@ -1,0 +1,70 @@
+/* =====================================================================
+   BCD Analytics brand layer (loaded last). Palette from bcdtravel.com:
+   Noble Navy #0B0052 · Vivid Violet #542DFF · True Blue #00629B ·
+   Sky Blue #00AFD7 · Ice Blue #B7C9D3 · Light Ice #F1F4F6 · Inter.
+   ===================================================================== */
+:root {
+  --navy: #0B0052;
+  --violet: #542DFF;
+  --true-blue: #00629B;
+  --sky: #00AFD7;
+  --ice: #B7C9D3;
+  --orange: #FF671D;
+  --line: #DDE4E9;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+body { font-family: var(--font-sans); }
+button, input, select, textarea { font-family: inherit; }
+:focus-visible { outline-color: var(--violet); }
+
+/* ---- wordmark ---- */
+.logo { align-items: center; }
+.bcd-logo { display: inline-flex; align-items: center; gap: 12px; }
+.bcd-logo svg { display: block; width: auto; }
+.bcd-logo-product { font-size: calc(var(--logo-h) * .5); font-weight: 600; letter-spacing: -.01em; color: var(--navy); padding-left: 12px; border-left: 1px solid var(--ice); line-height: 1.1; }
+
+/* ---- light, airy chrome like bcdtravel.com: white header, navy text, violet accents ---- */
+.nav { background: #fff; border-bottom: 1px solid var(--line); animation: none; }
+.nav-link { color: var(--navy); font-weight: 600; }
+.nav-link:hover, .nav-link.active, .nav-link.open { background: transparent; color: var(--violet); }
+.nav-links > .nav-link::after, .nav-dropdown > .nav-link::after { background: var(--violet); }
+.header { box-shadow: none; }
+.header-action { color: var(--navy); font-weight: 600; }
+.header-action:hover { background: #F1F4F6; color: var(--violet); }
+.section-header h2 { color: var(--orange); }
+.section-header h2 .ico { color: var(--navy); }
+.welcome, h1, h2, h3 { color: var(--navy); }
+.welcome { font-weight: 800; letter-spacing: -.03em; }
+.profile-selector { background: #F1F4F6; }
+.profile-selector .blob { display: none; }
+.profile-header { color: var(--navy); }
+.profile-header h1 { color: var(--navy); font-weight: 800; letter-spacing: -.03em; -webkit-text-fill-color: initial; background: none; animation: none; }
+.profile-header p { color: #404040; opacity: 1; }
+.profile-card { border: 1px solid var(--ice); box-shadow: 0 8px 28px rgba(11,0,82,.08); }
+
+/* ---- dark surfaces: solid navy, no animated gradients ---- */
+.upgrade-banner { background: linear-gradient(120deg, var(--navy), #2A1A8A); animation: none; }
+.profile-card.premium::before { background: conic-gradient(from var(--ang, 0deg), var(--sky), var(--violet), var(--sky)); }
+.split-ai-head { background: var(--navy); }
+.split-ai, .ai-stage-wrap { background: conic-gradient(from var(--ang, 0deg), var(--sky), var(--violet), var(--sky)); }
+.ai-page { background: radial-gradient(900px 500px at 12% 0%, rgba(84,45,255,.4), transparent 60%), radial-gradient(900px 600px at 95% 100%, rgba(0,175,215,.25), transparent 60%), var(--navy); }
+.aurora { opacity: .22; }
+.ai-top-brand h1 .thin { font-weight: 300; }
+.ai-top-brand h1 .grad { color: var(--sky); }
+.ai-orb .ai-mark, .ai-mark, .ai-fab { background: linear-gradient(135deg, var(--violet), var(--sky)); }
+.route-progress { background: linear-gradient(90deg, var(--violet), var(--sky)); box-shadow: none; }
+.toast { background: var(--navy); }
+.logout-btn, .user-badge { white-space: nowrap; }
+.footer { background: var(--navy); }
+
+/* ---- controls: BCD pill buttons ---- */
+.primary-btn, .logout-btn, .view-more-btn, .upgrade-btn, .ask-btn, .hero-cta, .ai-new, .ai-form button { border-radius: 50px; font-weight: 700; }
+.primary-btn, .ask-btn, .ai-form button { background: var(--violet); color: #fff; }
+.primary-btn:hover, .ask-btn:hover, .ai-form button:hover { background: var(--navy); box-shadow: 0 6px 16px rgba(11,0,82,.25); }
+.logout-btn { color: var(--violet); border-color: var(--violet); background: transparent; }
+.logout-btn:hover { background: var(--violet); color: #fff; }
+.filter-chip, .ai-prompt { border-radius: 50px; }
+.tab-pill { background: var(--violet); box-shadow: 0 4px 12px rgba(84,45,255,.3); }
+.stat-icon.blue, .icon-box, .alert-icon, .id-tag { background: #EDE9FF; color: var(--violet); }
+.stat-icon.teal, .tab-card-icon { background: #DDF3FA; color: var(--true-blue); }
+.user-badge.premium { background: #EDE9FF; color: var(--violet); }
