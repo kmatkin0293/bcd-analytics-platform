@@ -790,4 +790,7 @@ app.all('/api/ts-rest/*path', async (req, res) => {
   }
 })
 
-app.listen(Number(PORT_API), () => console.log(`API server on http://localhost:${PORT_API}`))
+// On Vercel the app runs as a serverless function (api/index.js), which needs the app and no listener.
+if (!process.env.VERCEL) app.listen(Number(PORT_API), () => console.log(`API server on http://localhost:${PORT_API}`))
+
+export default app
