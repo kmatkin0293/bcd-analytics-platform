@@ -3,13 +3,16 @@ import dotenv from 'dotenv'
 import express from 'express'
 import Anthropic from '@anthropic-ai/sdk'
 import { load as loadYaml } from 'js-yaml'
-import PptxGenJS from 'pptxgenjs'
 import { Readable } from 'node:stream'
+import { createRequire } from 'node:module'
 import { CLIENT_NAME, TABS, LABS_EXCLUDED_IDS } from '../src/config.js'
 import { buildSystemPrompt, AI_MODEL, AI_MAX_TOKENS, MCP, TOOL_CONFIGS, humanizeToolName, extractThinkingChunks, extractIframeUrl } from './ai.js'
 
 // override: true so .env.local wins over any stale variables already in the shell
 dotenv.config({ path: '.env.local', override: true })
+
+// pptxgenjs's ES build fails to load in Vercel's function runtime, so load its CommonJS build, and only when exporting.
+const require = createRequire(import.meta.url)
 
 const {
   TS_HOST, TS_USERNAME, TS_MODEL_ID, THOUGHTSPOT_SECRET_KEY, THOUGHTSPOT_ORG_ID, ANTHROPIC_API_KEY,
@@ -684,6 +687,7 @@ app.post('/api/export/pptx', async (req, res) => {
     const images = (await mapPool(charts, 4, async (c) => ({ ...c, png: await chartPng(liveboardId, c.guid) }))).filter((c) => c.png)
     if (!images.length) return res.status(502).json({ error: 'No charts could be rendered' })
 
+    const PptxGenJS = require('pptxgenjs')
     const pres = new PptxGenJS()
     pres.layout = 'LAYOUT_WIDE' // 13.33 x 7.5 in
     const deckTitle = `${tab.name}${tabName && tabName !== tab.name ? `: ${tabName}` : ''}`
