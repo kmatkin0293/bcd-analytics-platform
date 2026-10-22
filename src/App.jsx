@@ -30,6 +30,8 @@ const EQUIPMENT = [
   '4001 - 48X 40 CHEP PALLETS',
 ]
 
+/** Traveller Wellbeing is listed with the Analytics tabs; the other insights stay under Insights. */
+const WELLBEING_SLUG = 'traveller-safety'
 const UPGRADE_EVENT = 'chep-upgrade'
 const noop = () => {}
 const SPOTTER_FILTERS = [CLIENT_FILTER] // module-level: a new array each render would reload the embed
@@ -106,8 +108,11 @@ function Sidebar({ userType, actions }) {
         ) : (
           <button key={t.slug} className="sb-link locked" onClick={() => actions.upgrade(t)}><Icon name={t.icon} size={17} /> {t.name} <Icon name="lock" size={13} className="lock" /></button>
         )))}
+        {INSIGHTS.filter((i) => i.slug === WELLBEING_SLUG).map((i) => (
+          <NavLink key={i.slug} to={`/insights/${i.slug}`} className={link}><Icon name={i.icon} size={17} /> {i.name}</NavLink>
+        ))}
         <div className="sb-label">Insights</div>
-        {INSIGHTS.map((i) => (
+        {INSIGHTS.filter((i) => i.slug !== WELLBEING_SLUG).map((i) => (
           <NavLink key={i.slug} to={`/insights/${i.slug}`} className={link}><Icon name={i.icon} size={17} /> {i.name}</NavLink>
         ))}
         <div className="sb-label">Operations</div>

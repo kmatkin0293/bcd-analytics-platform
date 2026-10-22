@@ -614,3 +614,23 @@ body.reduce-motion * { animation-duration: .01ms !important; transition-duration
 
 .sb-pill.beta { background: var(--cobalt-soft); color: var(--cobalt); }
 .sb-link.active .sb-pill.beta { background: var(--orange); color: #fff; }
+
+/* ---------- Rebook window ---------- */
+.rebook-head { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-bottom: 14px; font-size: 13.5px; }
+.rebook-who, .rebook-route { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); }
+.rebook-steps { list-style: none; display: grid; gap: 10px; margin-bottom: 16px; }
+.rebook-steps li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text-3); }
+.rebook-steps li.is-active { color: var(--text); font-weight: 600; }
+.rebook-steps li.is-done { color: var(--text-2); }
+.rebook-dot { width: 20px; height: 20px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--border-2); }
+.rebook-steps li.is-done .rebook-dot { background: var(--green); border-color: var(--green); color: #fff; }
+.rebook-card { padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--canvas); }
+.rebook-card.is-booked { border-color: var(--green); background: var(--green-soft); }
+.rebook-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 14.5px; }
+.rebook-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; border-radius: 999px; background: var(--green); color: #fff; font-size: 11.5px; font-weight: 600; }
+.rebook-card dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 13px; }
+.rebook-card dt { color: var(--text-3); }
+.rebook-ref { font-family: var(--font-mono); font-weight: 700; letter-spacing: .08em; }
+.rebook-note { margin-top: 12px; font-size: 12px; color: var(--text-3); }
+.rebook-error { padding: 10px 12px; border-radius: var(--r-md); background: var(--red-soft); color: var(--red-text); font-size: 13px; }
+.msg-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; }

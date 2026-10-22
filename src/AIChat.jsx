@@ -5,6 +5,7 @@ import { CLIENT_NAME } from './config'
 import { applyEvent, createConversation, finishTurn, newTurn, stopResponse, streamMessage } from './spotter'
 import { SpotterTurn, WebAnswer } from './SpotterTurn'
 import { NotifyTravellersModal, parseRouteLines, extractRoutes, extractFlightOptions } from './NotifyTravellers'
+import { RebookModal } from './RebookTraveller'
 
 const ChatContext = createContext(null)
 export const useAIChat = () => useContext(ChatContext)
@@ -54,6 +55,7 @@ export function AIChatProvider({ children, enabled, onLocked }) {
   const [notifyTo, setNotifyTo] = useState(null)
   const [notifyMode, setNotifyMode] = useState('routes')
   const [notifyTraveller, setNotifyTraveller] = useState(null)
+  const [rebookTrip, setRebookTrip] = useState(null)
   /** The Needs attention trip the chat is about (set by the row's Ask button); "notify" then means just this traveller. */
   const selectedTrip = useRef(null)
   const conversation = useRef(null)
@@ -109,8 +111,11 @@ export function AIChatProvider({ children, enabled, onLocked }) {
       setItems((list) => [...list,
         { id: nextId.current++, kind: 'user', text: q },
         selectedTrip.current
-          ? { id: nextId.current++, kind: 'action', text: `Yes. I can draft an email to ${selectedTrip.current.name} listing the route options from this chat. You can review and edit it before it goes out.`, action: { label: `Notify ${selectedTrip.current.name.split(' ')[0]}`, icon: 'mail', run: () => openNotify({ traveller: travellerFromTrip(selectedTrip.current) }) } }
-          : { id: nextId.current++, kind: 'action', text: 'Yes. I can draft an email to the travellers whose trips need rebooking, listing the alternative routes from this conversation. You can review and edit it before it goes out.', action: { label: 'Notify travellers', icon: 'mail', run: () => openNotify() } },
+          ? { id: nextId.current++, kind: 'action', text: `Yes. I can draft an email to ${selectedTrip.current.name} listing the route options from this chat. You can review and edit it before it goes out.`, actions: [
+            { label: `Notify ${selectedTrip.current.name.split(' ')[0]}`, icon: 'mail', run: () => openNotify({ traveller: travellerFromTrip(selectedTrip.current) }) },
+            { label: `Rebook for ${selectedTrip.current.name.split(' ')[0]}`, icon: 'plane', run: () => setRebookTrip(selectedTrip.current) },
+          ] }
+          : { id: nextId.current++, kind: 'action', text: 'Yes. I can draft an email to the travellers whose trips need rebooking, listing the alternative routes from this conversation. You can review and edit it before it goes out.', actions: [{ label: 'Notify travellers', icon: 'mail', run: () => openNotify() }] },
       ])
       return
     }
@@ -295,7 +300,9 @@ export function AIChatProvider({ children, enabled, onLocked }) {
             <div key={it.id} className="msg-action">
               <span className="sp-label"><span className="sp-mark"><Icon name="sparkles" size={11} strokeWidth={2.4} /></span> BCD AI</span>
               <p>{it.text}</p>
-              <button type="button" className="primary-btn" onClick={it.action.run}><Icon name={it.action.icon} size={15} /> {it.action.label}</button>
+              <div className="msg-action-buttons">
+                {it.actions.map((a, i) => <button key={a.label} type="button" className={i === 0 ? 'primary-btn' : 'ghost-btn'} onClick={a.run}><Icon name={a.icon} size={15} /> {a.label}</button>)}
+              </div>
             </div>
           ) : (
             <div key={it.id} className="msg-turn"><SpotterTurn turn={it.turn} onRetry={streaming ? undefined : () => ask(it.turn.question)} /></div>
@@ -310,6 +317,15 @@ export function AIChatProvider({ children, enabled, onLocked }) {
         </form>
       </aside>
 
+      {rebookTrip && (
+        <RebookModal
+          open
+          trip={rebookTrip}
+          getFlightText={() => items.findLast((it) => it.kind === 'web' && it.trip?.name === rebookTrip.name && it.text)?.text ?? ''}
+          onClose={() => setRebookTrip(null)}
+          onNotify={(trip) => openNotify({ traveller: travellerFromTrip(trip) })}
+        />
+      )}
       {notifyOpen && <NotifyTravellersModal open mode={notifyMode} traveller={notifyTraveller} initialTo={notifyTo} onClose={() => setNotifyOpen(false)} getRoutes={getRoutes} onAskRoutes={() => { setNotifyOpen(false); ask(ASK_ROUTES) }} />}
     </ChatContext.Provider>
   )

@@ -42,7 +42,7 @@ export const tabBySlug = (slug) => TABS.find((t) => t.slug === slug)
 export const INSIGHTS = [
   { slug: 'savings-suppliers', name: 'Savings & Suppliers', icon: 'tag', eyebrow: 'Spend intelligence',
     blurb: 'Negotiated savings, supplier concentration and preferred-supplier usage' },
-  { slug: 'traveller-safety', name: 'Traveller Safety', icon: 'life-buoy', eyebrow: 'Duty of care',
+  { slug: 'traveller-safety', name: 'Traveller Wellbeing', icon: 'life-buoy', eyebrow: 'Duty of care',
     blurb: 'Travellers exposed to storm-related disruption and where they are going' },
   { slug: 'disruption-rebooking', name: 'Disruption & Rebooking', icon: 'warn', eyebrow: 'Operations',
     blurb: 'Bookings that need rebooking, and the spend and suppliers involved' },

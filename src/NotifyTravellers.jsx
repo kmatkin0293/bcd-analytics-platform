@@ -60,6 +60,23 @@ export function extractFlightOptions(text = '') {
   return out
 }
 
+/** The same table as extractFlightOptions, one object per row (flight, departs, arrives, stops, price, policy), in the order BCD AI listed them. */
+export function extractFlightRows(text = '') {
+  const out = []
+  let cols = null
+  for (const raw of text.split('\n')) {
+    const line = raw.trim()
+    if (!line.startsWith('|')) { cols = null; continue }
+    const cells = line.replace(/^\||\|$/g, '').split('|').map((c) => stripMd(c.trim()))
+    if (cells.every((c) => /^:?-{2,}:?$/.test(c))) continue
+    if (!cols) { cols = cells.map((c) => c.toLowerCase()); continue }
+    const get = (re) => { const i = cols.findIndex((c) => re.test(c)); return i >= 0 ? cells[i] : '' }
+    const flight = get(/flight|option/)
+    if (flight) out.push({ flight, departs: get(/depart/), arrives: get(/arriv/), stops: get(/stop/), price: get(/price|fare|cost/), policy: get(/policy/) })
+  }
+  return out
+}
+
 const NYC = ['New York', 'NYC', 'JFK', 'Newark', 'EWR', 'LGA']
 const escapeRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
