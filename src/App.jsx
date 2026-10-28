@@ -6,6 +6,7 @@ import { TABS, INSIGHTS, tabBySlug, insightBySlug, TRAVEL, MODEL_ID, CLIENT_FILT
 import { ToastProvider, useToast, Modal, CountUp, useLiveData } from './ui'
 import { AIChatProvider, useAIChat, AIMark } from './AIChat'
 import { LiveboardTab } from './Analytics'
+import { AIAnalystPage } from './AIAnalyst'
 import { ExperienceProvider } from './labs/experience'
 import { Dashboards } from './labs/DashboardsPage'
 import { DashboardView } from './labs/DashboardView'
@@ -101,6 +102,7 @@ function Sidebar({ userType, actions }) {
         <div className="sb-label">Core modules</div>
         <NavLink to="/dashboard" className={link}><Icon name="dashboard" size={17} /> Home</NavLink>
         <NavLink to="/ai" className={link}><Icon name="sparkles" size={17} /> BCD AI <span className="sb-pill">Live</span></NavLink>
+        <NavLink to="/ai-analyst" className={link}><Icon name="sparkles" size={17} /> AI Analyst <span className="sb-pill beta">New</span></NavLink>
         <NavLink to="/labs" className={link}><Icon name="flask" size={17} /> Dashboard Builder</NavLink>
         <div className="sb-label">Analytics</div>
         {TABS.map((t) => (canSeeTab(userType, t) ? (
@@ -866,7 +868,7 @@ function Shell({ userType, onLogout }) {
       <Sidebar userType={userType} actions={actions} />
       <div className="workspace">
       <Topbar userType={userType} onLogout={onLogout} actions={actions} />
-      <main className={`main ${location.pathname === '/ai' ? 'full' : ''} ${location.pathname.startsWith('/analytics') || /^\/(labs|dashboards|studio)/.test(location.pathname) ? 'wide' : ''}`}>
+      <main className={`main ${['/ai', '/ai-analyst'].includes(location.pathname) ? 'full' : ''} ${location.pathname.startsWith('/analytics') || /^\/(labs|dashboards|studio)/.test(location.pathname) ? 'wide' : ''}`}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={pageKey} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.22 }}>
             <Routes location={location}>
@@ -876,6 +878,7 @@ function Shell({ userType, onLogout }) {
               <Route path="/analytics/:tab" element={<AnalyticsPage userType={userType} actions={actions} />} />
               <Route path="/insights/:slug" element={<InsightPage />} />
               <Route path="/ai" element={<AIPage />} />
+              <Route path="/ai-analyst" element={<AIAnalystPage />} />
               <Route path="/dashboards" element={<Dashboards />} />
               <Route path="/dashboards/:id" element={<DashboardView />} />
               <Route path="/studio" element={<Studio />} />
