@@ -34,6 +34,11 @@ export const TABS = [
   { slug: 'bookings-trips', name: 'Bookings & Trips', icon: 'plane', customer: true,
     blurb: 'Booking volumes, channels, lead times and trip patterns',
     ask: 'How do our bookings split by channel and advance booking window?' },
+  // Benchmarking compares the client with industry peers. Its model has no "Client Name" column, so the client filter is not applied.
+  { slug: 'benchmarking', liveboardId: 'e1feb201-0dad-4bc0-8a82-9db886cc7224', modelId: '230e3baf-c640-4988-9a8d-d8a53e037baa', scoped: false,
+    name: 'Benchmarking', icon: 'chart', customer: true,
+    blurb: 'How travel spend, policy compliance and carbon compare with industry peers',
+    ask: 'How does our travel spend per trip and policy compliance compare with our industry peers?' },
 ]
 
 export const tabBySlug = (slug) => TABS.find((t) => t.slug === slug)

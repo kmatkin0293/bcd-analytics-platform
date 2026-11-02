@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SpotterEmbed } from '@thoughtspot/visual-embed-sdk/react'
 import { HostEvent } from '@thoughtspot/visual-embed-sdk'
@@ -61,6 +62,8 @@ const SPOTTER_STYLE = {
 }
 
 export function AIAnalystPage() {
+  // Opened from a tab with its own model (Benchmarking): ask that model, without the client scope its columns don't have.
+  const { modelId, topic } = useLocation().state ?? {}
   const [spotterActive, setSpotterActive] = useState(false)
   const [activeChip, setActiveChip] = useState(null)
   const [msgs, setMsgs] = useState([])
@@ -72,6 +75,7 @@ export function AIAnalystPage() {
   const counter = useRef(0)
   const feedRef = useRef(null)
 
+  useEffect(() => { spotterReady.current = false }, [modelId]) // a different model remounts the embed
   useEffect(() => { feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' }) }, [msgs])
 
   const fire = (query) => spotterRef.current?.trigger(HostEvent.SpotterSearch, { query, executeSearch: true })
@@ -126,11 +130,11 @@ export function AIAnalystPage() {
         )}
         <div className="aia-embed" style={{ display: spotterActive ? 'flex' : 'none' }}>
           <SpotterEmbed
-            key="aia-persistent"
+            key={`aia-${modelId ?? 'default'}`}
             ref={spotterRef}
             onLoad={handleLoad}
-            worksheetId={MODEL_ID}
-            runtimeFilters={SPOTTER_FILTERS}
+            worksheetId={modelId ?? MODEL_ID}
+            {...(modelId ? {} : { runtimeFilters: SPOTTER_FILTERS })}
             updatedSpotterChatPrompt
             hideSourceSelection
             hideSampleQuestions
@@ -143,7 +147,7 @@ export function AIAnalystPage() {
       <aside className="aia-side">
         <header className="aia-side-head">
           <AIMark size={30} />
-          <div><strong>AI Analyst</strong><small>Travel intelligence</small></div>
+          <div><strong>AI Analyst</strong><small>{topic ? `${topic} intelligence` : 'Travel intelligence'}</small></div>
           <span className="aia-live" />
         </header>
 

@@ -493,7 +493,7 @@ function AnalyticsPage({ userType, actions }) {
     <motion.div className="page" initial="hidden" animate="show" variants={stagger}>
       <motion.div variants={fadeUp}>
         <PageHeader eyebrow="Analytics dashboard" title={tab.name} sub={tab.blurb}>
-          <button className="primary-btn" onClick={() => chat.openChat()}>
+          <button className="primary-btn" onClick={() => (tab.modelId ? navigate('/ai-analyst', { state: { modelId: tab.modelId, topic: tab.name } }) : chat.openChat())}>
             <Icon name="sparkles" size={15} /> Ask BCD AI
           </button>
         </PageHeader>

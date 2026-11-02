@@ -56,6 +56,7 @@ const BASE_FILTERS = [CLIENT_FILTER]
 const TAB_FILTERS = {
   overview: ['type', 'channel'],
   'policy-compliance': ['type', 'channel'],
+  benchmarking: [], // peer data has no travel type / channel columns; only the more-actions menu shows
 }
 
 /** The liveboard embed for one tab, with live runtime filters and click-through to BCD AI. */
@@ -209,6 +210,7 @@ export function LiveboardTab({ slug, userType, showFilters = true, hideHeader = 
   }, [embedRef])
   const onEmbedError = useCallback((e) => console.warn('Liveboard embed warning', e?.data?.message || e?.message), [])
 
+  const scoped = tab.scoped !== false // tabs on other models (Benchmarking) are not filtered to the client
   const names = TAB_FILTERS[slug] || ['type']
   const activeCount = Object.values(filters).filter(Boolean).length
 
@@ -259,7 +261,7 @@ export function LiveboardTab({ slug, userType, showFilters = true, hideHeader = 
             <AnimatePresence>
               {moreOpen && (
                 <motion.div className="filter-menu right" role="menu" initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6 }}>
-                  {MORE_ACTIONS.map((a) => (
+                  {MORE_ACTIONS.filter((a) => scoped || a.id !== 'notify').map((a) => (
                     <button key={a.id} role="menuitem" disabled={a.id === 'pptx' && exporting} onClick={() => runMore(a)}><Icon name={a.icon} size={15} /> {a.id === 'pptx' && exporting ? 'Building PowerPoint…' : a.label}</button>
                   ))}
                 </motion.div>
@@ -299,9 +301,7 @@ export function LiveboardTab({ slug, userType, showFilters = true, hideHeader = 
             fullHeight
             onLiveboardRendered={onRendered}
             onVizPointClick={onVizPointClick}
-            runtimeFilters={BASE_FILTERS}
-            customActions={CUSTOM_ACTIONS}
-            onCustomAction={onCustomAction}
+            {...(scoped ? { runtimeFilters: BASE_FILTERS, customActions: CUSTOM_ACTIONS, onCustomAction } : {})}
             onError={onEmbedError}
             {...(userType === 'basic' ? { disabledActions: BASIC_DISABLED, disabledActionReason: 'Contact your BCD service agent to unlock this feature' } : { enable2ColumnLayout: false })}
           />
